@@ -1,8 +1,8 @@
-ul.section-ul ul.tags a {
-  font-size: 0.65rem !important;
-  padding: 0.1rem 0.4rem !important;
-  opacity: 0.6 !important;  
-  max-width: 120px !important;    
+ul.section-ul ul.tags a {  
+  padding: 0.05rem 0.3rem !important;
+  opacity: 0.45 !important;
+  max-width: 140px !important;
+  
   white-space: nowrap !important;
   overflow: hidden !important;
   text-overflow: ellipsis !important; 
@@ -11,5 +11,5 @@ ul.section-ul ul.tags a {
 }
 
 ul.section-ul ul.tags a:hover {
-  opacity: 1 !important;
+  opacity: 1 !important; 
 }
