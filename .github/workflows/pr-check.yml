@@ -24,9 +24,14 @@ jobs:
 
       - name: Получение списка измененных файлов
         run: |
-          git diff --name-only --diff-filter=d origin/${{ github.base_ref }} HEAD > changed_files.txt
-          echo "Файлы для проверки:"
+          echo "Базовый коммит: ${{ github.event.pull_request.base.sha }}"
+          echo "Текущий коммит: ${{ github.event.pull_request.head.sha }}"
+          
+          git diff --name-only --diff-filter=d ${{ github.event.pull_request.base.sha }} ${{ github.event.pull_request.head.sha }} > changed_files.txt
+          
+          echo "--- СОДЕРЖИМОЕ ФАЙЛА changed_files.txt ---"
           cat changed_files.txt
+          echo "------------------------------------------"
 
       - name: Запуск валидатора
         run: python .github/scripts/validate_contributing.py
