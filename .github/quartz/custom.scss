@@ -1,4 +1,4 @@
-.section-ul .tags .tag {
+ul.section-ul ul.tags a {
   font-size: 0.65rem !important;
   padding: 0.1rem 0.4rem !important;
   opacity: 0.6 !important;  
@@ -10,6 +10,6 @@
   vertical-align: middle !important;
 }
 
-.section-ul .tags .tag:hover {
+ul.section-ul ul.tags a:hover {
   opacity: 1 !important;
 }
