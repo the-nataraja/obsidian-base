@@ -50,9 +50,9 @@ jobs:
             # Копируем .ts настройки
             cp content-repo/.github/quartz/*.ts quartz-ssg/
             
-            # Копируем стили (если файл существует)
             if [ -f "content-repo/.github/quartz/custom.scss" ]; then
-              cp content-repo/.github/quartz/custom.scss quartz-ssg/quartz/styles/custom.scss
+              echo "" >> quartz-ssg/quartz/styles/custom.scss
+              cat content-repo/.github/quartz/custom.scss >> quartz-ssg/quartz/styles/custom.scss
             fi
           fi
 
