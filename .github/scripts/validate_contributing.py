@@ -118,7 +118,7 @@ if __name__ == "__main__":
     try:
         with open('changed_files.txt', 'r', encoding='utf-8') as f:
             # Читаем строки и удаляем лишние пробелы/переносы по краям
-            files_to_check = [line.strip() for line in f if line.strip()]
+            files_to_check = [line.strip().strip('"') for line in f if line.strip()]
     except FileNotFoundError:
         print("Файл со списком изменений не найден. Проверка пропущена.")
         sys.exit(0)
