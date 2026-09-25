@@ -12,7 +12,7 @@ const config: QuartzConfig = {
     enablePopovers: true,
     analytics: null,
     locale: "ru-RU",
-    baseUrl: "vlsu-hub.github.io/obsidian-base",
+    baseUrl: "the-nataraja/obsidian-base",
     ignorePatterns: ["private", "templates", ".obsidian", "**/_*.md"],
     defaultDateType: "created",
     generateSocialImages: false,
