@@ -1,0 +1,79 @@
+name: Deploy Quartz site to GitHub Pages
+
+on:
+  push:
+    branches:
+      - main
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: "pages"
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout content repository
+        uses: actions/checkout@v4
+        with:
+          path: 'content-repo'
+
+      - name: Checkout Quartz repository
+        uses: actions/checkout@v4
+        with:
+          repository: jackyzha0/quartz
+          ref: v4 
+          path: 'quartz-ssg'
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: 'npm'
+          cache-dependency-path: 'quartz-ssg/package-lock.json'
+
+      - name: Install dependencies
+        working-directory: ./quartz-ssg
+        run: npm ci
+
+      - name: Assemble Vault and Configs
+        run: |
+          rm -rf quartz-ssg/content/*
+          
+          # Копируем конфиги, если они есть
+          if [ -d "content-repo/.github/quartz" ]; then
+            cp content-repo/.github/quartz/*.ts quartz-ssg/
+          fi
+          
+          # Копируем папки семестров
+          find content-repo -maxdepth 1 -type d -name "*семестр*" -exec cp -r {} quartz-ssg/content/ \;
+          
+          # Копируем README
+          if [ -f "content-repo/README.md" ]; then
+            cp content-repo/README.md quartz-ssg/content/index.md
+          fi
+
+      - name: Build Quartz
+        working-directory: ./quartz-ssg
+        run: npx quartz build
+
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: quartz-ssg/public
+
+  deploy:
+    needs: build
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
