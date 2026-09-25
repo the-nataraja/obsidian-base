@@ -45,9 +45,15 @@ jobs:
         run: |
           rm -rf quartz-ssg/content/*
 
-          # Копируем конфиги, если они есть
+          # Копируем конфиги и стили
           if [ -d "content-repo/.github/quartz" ]; then
+            # Копируем .ts настройки
             cp content-repo/.github/quartz/*.ts quartz-ssg/
+            
+            # Копируем стили (если файл существует)
+            if [ -f "content-repo/.github/quartz/custom.scss" ]; then
+              cp content-repo/.github/quartz/custom.scss quartz-ssg/quartz/styles/custom.scss
+            fi
           fi
 
           # Копируем папки семестров
