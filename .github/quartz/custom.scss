@@ -1,9 +1,15 @@
 .section-ul .tags .tag {
-  font-size: 0.65rem;
-  padding: 0.1rem 0.3rem;
-  opacity: 0.6;  
-  max-width: 120px;    
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis; 
+  font-size: 0.65rem !important;
+  padding: 0.1rem 0.4rem !important;
+  opacity: 0.6 !important;  
+  max-width: 120px !important;    
+  white-space: nowrap !important;
+  overflow: hidden !important;
+  text-overflow: ellipsis !important; 
+  display: inline-block !important;
+  vertical-align: middle !important;
+}
+
+.section-ul .tags .tag:hover {
+  opacity: 1 !important;
 }
