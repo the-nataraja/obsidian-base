@@ -111,8 +111,22 @@ def check_file(filepath):
     return errors, warnings
 
 if __name__ == "__main__":
-    files_to_check = sys.argv[1:]
     all_errors = []
+    files_to_check = []
+
+    # Читаем список файлов из временного документа
+    try:
+        with open('changed_files.txt', 'r', encoding='utf-8') as f:
+            # Читаем строки и удаляем лишние пробелы/переносы по краям
+            files_to_check = [line.strip() for line in f if line.strip()]
+    except FileNotFoundError:
+        print("Файл со списком изменений не найден. Проверка пропущена.")
+        sys.exit(0)
+
+    # Если файлов нет, завершаем успешно
+    if not files_to_check:
+        print("✅ Нет файлов для проверки (или изменены только не-markdown файлы).")
+        sys.exit(0)
 
     for filepath in files_to_check:
         # Игнорируем удаленные файлы
@@ -123,7 +137,7 @@ if __name__ == "__main__":
             errors, warnings = check_file(filepath)
             all_errors.extend(errors)
             
-            # Печатаем предупреждения (GitHub их перехватит)
+            # Печатаем предупреждения
             for warning in warnings:
                 print(warning)
 
