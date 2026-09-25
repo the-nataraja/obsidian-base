@@ -1,152 +1,150 @@
 import os
-import sys
 import re
+import sys
+from pathlib import PurePosixPath
+
 import yaml
 
-# --- НАСТРОЙКИ ---
-ALLOWED_PREFIXES = ['КП', 'ЛБ', 'ПР', 'ЭКЗ']
-ALLOWED_TAGS = ['#экзамен', '#важно', '#дописать', '#вопрос']
-# Презентации теперь полностью под запретом
-BANNED_EXTENSIONS = ['.mp3', '.mp4', '.zip', '.rar', '.7z', '.exe', '.bin', '.pptx', '.ppt']
-# Файлы, при изменении которых нужно выдать желтое предупреждение (без блокировки PR)
-WARNING_FILES = ['.gitignore', 'contributing.md']
+ALLOWED_PREFIXES = ["КП", "ЛБ", "ПР", "ЭКЗ"]
+ALLOWED_TAGS = ["#экзамен", "#важно", "#дописать", "#вопрос"]
+ALLOWED_EXTENSIONS = {".md", ".png", ".jpg", ".jpeg", ".webp", ".gif", ".svg", ".pdf"}
+
+MAX_FILE_SIZE_MB = 10
+WARNING_FILES = [".gitignore", "contributing.md"]
+
 
 def check_file(filepath):
     errors = []
     warnings = []
-    
+
     filename = os.path.basename(filepath)
     ext = os.path.splitext(filename)[1].lower()
 
-    # 1. Проверка на системные файлы (ПРЕДУПРЕЖДЕНИЯ)
     if filename in WARNING_FILES:
-        warnings.append(f"::warning title=Внимание! Изменен системный файл::Администратор, обратите внимание: изменен файл {filepath}")
+        warnings.append(
+            f"::warning title=Изменен системный файл::Обратите внимание на изменение {filepath}"
+        )
 
-    # 2. Проверка запрещенных форматов (ОШИБКИ)
-    if ext in BANNED_EXTENSIONS:
-        errors.append(f"Файл {filename}: Формат {ext} строго запрещен для загрузки.")
-        return errors, warnings # Дальше не проверяем
+    file_size_mb = os.path.getsize(filepath) / (1024 * 1024)
+    if file_size_mb > MAX_FILE_SIZE_MB:
+        errors.append(
+            f"[{filename}] Превышен размер файла: {file_size_mb:.2f} МБ (лимит {MAX_FILE_SIZE_MB} МБ)."
+        )
 
-    # Если это не Markdown, игнорируем его для дальнейших проверок
-    if ext != '.md':
+    if ext not in ALLOWED_EXTENSIONS:
+        errors.append(f"[{filename}] Недопустимое расширение '{ext}'.")
         return errors, warnings
 
-    path_parts = filepath.split(os.sep)
+    if ext != ".md":
+        return errors, warnings
 
-    # 3. Проверка структуры папок
+    # Git diff всегда возвращает пути с прямым слэшем (независимо от ОС)
+    path_parts = PurePosixPath(filepath).parts
+
     if len(path_parts) > 1 and "семестр" in path_parts[0].lower():
         if len(path_parts) >= 4:
             folder_lvl3 = path_parts[2]
-            if not re.match(r'^\d+_', folder_lvl3):
-                errors.append(f"Путь '{filepath}': Папка '{folder_lvl3}' должна начинаться с цифры и подчеркивания ('1_', '2_').")
-
-    # 4. Проверка имени файла (игнорируем индексы с '_')
-    if not filename.startswith('_'):
-        prefix_pattern = '|'.join(ALLOWED_PREFIXES)
-        
-        # Разбиваем имя на 3 части: Префикс, Номер, Тема
-        match = re.match(rf'^({prefix_pattern}) (\d{{2}}) - (.*)\.md$', filename)
-        
-        if not match:
-            errors.append(f"Имя файла '{filename}': Нарушен базовый формат. Должно быть '[ПРЕФИКС] [ДВЕ ЦИФРЫ] - [Тема].md'.")
-        else:
-            # Извлекаем саму тему (всё, что после дефиса и до .md)
-            _, _, topic = match.groups()
-            
-            # Строго проверяем тему: только маленькие буквы, цифры, минус и подчеркивание. Никаких пробелов!
-            if not re.match(r'^[a-zа-яё0-9_-]+$', topic):
+            if not re.match(r"^\d+_", folder_lvl3):
                 errors.append(
-                    f"Имя файла '{filename}': Ошибка в теме '{topic}'. "
-                    f"Тема должна быть ТОЛЬКО строчными (маленькими) буквами, "
-                    f"а вместо пробелов используйте подчеркивания '_' или дефисы '-'."
+                    f"[{filepath}] Папка '{folder_lvl3}' должна начинаться с цифры и подчеркивания (например '1_')."
                 )
 
-    # 5. Чтение и парсинг содержимого
+    if not filename.startswith("_"):
+        prefix_pattern = "|".join(ALLOWED_PREFIXES)
+        match = re.match(rf"^({prefix_pattern}) (\d{{2}}) - (.*)\.md$", filename)
+
+        if not match:
+            errors.append(
+                f"[{filename}] Неверный формат имени. Ожидается: '[ПРЕФИКС] [XX] - [Тема].md'."
+            )
+        else:
+            _, _, topic = match.groups()
+            if not re.match(r"^[a-zа-яё0-9_-]+$", topic):
+                errors.append(
+                    f"[{filename}] Ошибка в теме '{topic}'. Разрешены только строчные буквы, цифры, '_' и '-'."
+                )
+
     try:
-        with open(filepath, 'r', encoding='utf-8') as f:
+        with open(filepath, "r", encoding="utf-8") as f:
             content = f.read()
     except UnicodeDecodeError:
-        errors.append(f"Файл '{filename}': Сохранен не в кодировке UTF-8. Пересохраните файл.")
+        errors.append(f"[{filename}] Файл не в кодировке UTF-8.")
         return errors, warnings
     except Exception as e:
-        errors.append(f"Файл '{filename}': Невозможно прочитать ({e}).")
+        errors.append(f"[{filename}] Ошибка чтения: {e}")
         return errors, warnings
 
-    # Разделяем YAML и тело (поддерживает \n и \r\n)
-    yaml_match = re.match(r'^---\r?\n(.*?)\r?\n---\r?\n(.*)', content, re.DOTALL)
+    yaml_match = re.match(r"^---\r?\n(.*?)\r?\n---\r?\n(.*)", content, re.DOTALL)
     if not yaml_match:
-        errors.append(f"Файл '{filename}': Отсутствует или сломана YAML шапка (блоки ---).")
+        errors.append(f"[{filename}] Отсутствует или повреждена YAML шапка.")
     else:
         yaml_text, body_text = yaml_match.groups()
-        
-        # Проверка YAML
-        try:
-            metadata = yaml.safe_load(yaml_text)
-            if not metadata: 
-                metadata = {}
-            
-            # Дата
-            if 'date' not in metadata:
-                errors.append(f"Файл '{filename}': В шапке нет поля 'date'.")
-            elif not re.match(r'^\d{4}-\d{2}-\d{2}$', str(metadata.get('date', ''))):
-                errors.append(f"Файл '{filename}': Дата должна быть в формате ГГГГ-ММ-ДД.")
-            
-            # Теги автора
-            tags = metadata.get('tags', [])
-            if not tags or not isinstance(tags, list):
-                errors.append(f"Файл '{filename}': В шапке нет списка 'tags'.")
-            else:
-                has_author = any(str(tag).startswith('author/') for tag in tags)
-                if not has_author:
-                    errors.append(f"Файл '{filename}': Отсутствует обязательный тег 'author/username'.")
-        except yaml.YAMLError:
-            errors.append(f"Файл '{filename}': Синтаксическая ошибка в YAML шапке (неверные отступы или спецсимволы).")
 
-        # Проверка тегов в теле (запрет тематических)
-        body_tags = re.findall(r'(?<!\S)#[a-zA-Zа-яА-Я0-9_-]+', body_text)
+        try:
+            metadata = yaml.safe_load(yaml_text) or {}
+
+            if "date" not in metadata:
+                errors.append(f"[{filename}] Отсутствует поле 'date'.")
+            elif not re.match(r"^\d{4}-\d{2}-\d{2}$", str(metadata.get("date", ""))):
+                errors.append(
+                    f"[{filename}] Поле 'date' должно быть в формате YYYY-MM-DD."
+                )
+
+            tags = metadata.get("tags", [])
+            if not tags or not isinstance(tags, list):
+                errors.append(f"[{filename}] Отсутствует массив 'tags'.")
+            else:
+                has_author = any(str(tag).startswith("author/") for tag in tags)
+                if not has_author:
+                    errors.append(
+                        f"[{filename}] Отсутствует обязательный тег 'author/username'."
+                    )
+        except yaml.YAMLError:
+            errors.append(f"[{filename}] Синтаксическая ошибка в YAML.")
+
+        # Вырезаем блоки кода для предотвращения ложных срабатываний парсера тегов
+        clean_body = re.sub(r"```.*?```", "", body_text, flags=re.DOTALL)
+        clean_body = re.sub(r"`.*?`", "", clean_body)
+
+        body_tags = re.findall(r"(?<!\S)#[a-zA-Zа-яА-Я0-9_-]+", clean_body)
         for tag in body_tags:
             if tag.lower() not in ALLOWED_TAGS:
-                errors.append(f"Файл '{filename}': Тематические теги запрещены. Найден: '{tag}'.")
+                errors.append(f"[{filename}] Запрещенный тег '{tag}' в теле документа.")
 
     return errors, warnings
+
 
 if __name__ == "__main__":
     all_errors = []
     files_to_check = []
 
-    # Читаем список файлов из временного документа
     try:
-        with open('changed_files.txt', 'r', encoding='utf-8') as f:
-            # Читаем строки и удаляем лишние пробелы/переносы по краям
+        with open("changed_files.txt", "r", encoding="utf-8") as f:
             files_to_check = [line.strip().strip('"') for line in f if line.strip()]
     except FileNotFoundError:
-        print("Файл со списком изменений не найден. Проверка пропущена.")
+        print("Файл changed_files.txt не найден. Проверка пропущена.")
         sys.exit(0)
 
-    # Если файлов нет, завершаем успешно
     if not files_to_check:
-        print("✅ Нет файлов для проверки (или изменены только не-markdown файлы).")
+        print("Нет файлов для проверки.")
         sys.exit(0)
 
+    print(f"Запуск проверки для {len(files_to_check)} файла(ов)...")
     for filepath in files_to_check:
-        # Игнорируем удаленные файлы
-        if not os.path.exists(filepath):
+        if not os.path.exists(filepath) or not os.path.isfile(filepath):
             continue
-            
-        if os.path.isfile(filepath):
-            errors, warnings = check_file(filepath)
-            all_errors.extend(errors)
-            
-            # Печатаем предупреждения
-            for warning in warnings:
-                print(warning)
+
+        errors, warnings = check_file(filepath)
+        all_errors.extend(errors)
+
+        for warning in warnings:
+            print(warning)
 
     if all_errors:
-        print("\n❌ НАЙДЕНЫ ОШИБКИ ОФОРМЛЕНИЯ:\n")
+        print(f"\n[!] ОШИБКА ВАЛИДАЦИИ (найдено проблем: {len(all_errors)}):\n")
         for error in all_errors:
-            print(f" - {error}")
-        print("\nПожалуйста, исправьте эти ошибки и обновите Pull Request.")
+            print(f"  - {error}")
         sys.exit(1)
     else:
-        print("✅ Все файлы соответствуют стандарту contributing.md!")
+        print("\n[OK] Проверка успешно пройдена.")
         sys.exit(0)

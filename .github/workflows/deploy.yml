@@ -21,21 +21,21 @@ jobs:
       - name: Checkout content repository
         uses: actions/checkout@v4
         with:
-          path: 'content-repo'
+          path: "content-repo"
 
       - name: Checkout Quartz repository
         uses: actions/checkout@v4
         with:
           repository: jackyzha0/quartz
-          ref: v5
-          path: 'quartz-ssg'
+          ref: v4
+          path: "quartz-ssg"
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: 22
-          cache: 'npm'
-          cache-dependency-path: 'quartz-ssg/package-lock.json'
+          cache: "npm"
+          cache-dependency-path: "quartz-ssg/package-lock.json"
 
       - name: Install dependencies
         working-directory: ./quartz-ssg
@@ -44,15 +44,15 @@ jobs:
       - name: Assemble Vault and Configs
         run: |
           rm -rf quartz-ssg/content/*
-          
+
           # Копируем конфиги, если они есть
           if [ -d "content-repo/.github/quartz" ]; then
             cp content-repo/.github/quartz/*.ts quartz-ssg/
           fi
-          
+
           # Копируем папки семестров
           find content-repo -maxdepth 1 -type d -name "*семестр*" -exec cp -r {} quartz-ssg/content/ \;
-          
+
           # Копируем README
           if [ -f "content-repo/README.md" ]; then
             cp content-repo/README.md quartz-ssg/content/index.md
