@@ -43,26 +43,8 @@ jobs:
 
       - name: Assemble Vault and Configs
         run: |
-          rm -rf quartz-ssg/content/*
-
-          # Копируем конфиги и стили
-          if [ -d "content-repo/.github/quartz" ]; then
-            # Копируем .ts настройки
-            cp content-repo/.github/quartz/*.ts quartz-ssg/
-            
-            if [ -f "content-repo/.github/quartz/custom.scss" ]; then
-              echo "" >> quartz-ssg/quartz/styles/custom.scss
-              cat content-repo/.github/quartz/custom.scss >> quartz-ssg/quartz/styles/custom.scss
-            fi
-          fi
-
-          # Копируем папки семестров
-          find content-repo -maxdepth 1 -type d -name "*семестр*" -exec cp -r {} quartz-ssg/content/ \;
-
-          # Копируем README
-          if [ -f "content-repo/README.md" ]; then
-            cp content-repo/README.md quartz-ssg/content/index.md
-          fi
+          chmod +x content-repo/.github/quartz/build-prepare.sh
+          bash content-repo/.github/quartz/build-prepare.sh "$PWD/content-repo" "$PWD/quartz-ssg"
 
       - name: Build Quartz
         working-directory: ./quartz-ssg
