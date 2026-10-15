@@ -28,10 +28,10 @@ echo "Step 4/5: Copying notes and meta-files..."
 
 find "$NOTES_DIR" -maxdepth 1 -type d -name "*семестр*" -exec cp -r {} "$QUARTZ_DIR/content/" \;
 
-if [ -f "$NOTES_DIR/index.md" ]; then
-    cp "$NOTES_DIR/index.md" "$QUARTZ_DIR/content/index.md"
+if [ -f "$NOTES_DIR/.index.md" ]; then
+    cp "$NOTES_DIR/.index.md" "$QUARTZ_DIR/content/index.md"
 else
-    echo "Warning: index.md not found in the root. Site homepage will be empty."
+    echo "Warning: .index.md not found in the root. Site homepage will be empty."
 fi
 
 if [ -f "$NOTES_DIR/README.md" ]; then
