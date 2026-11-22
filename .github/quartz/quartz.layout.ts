@@ -26,6 +26,7 @@ export const defaultContentPageLayout: PageLayout = {
     Component.MobileOnly(Component.Spacer()),
     Component.Search(),
     Component.Darkmode(),
+    Component.ReaderMode(),
     Component.Explorer({
       title: "Навигация",
       useSavedState: true,
@@ -53,6 +54,7 @@ export const defaultListPageLayout: PageLayout = {
     Component.MobileOnly(Component.Spacer()),
     Component.Search(),
     Component.Darkmode(),
+    Component.ReaderMode(),
     Component.Explorer({
       title: "Навигация",
       useSavedState: true,

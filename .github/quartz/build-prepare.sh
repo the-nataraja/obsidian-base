@@ -22,7 +22,7 @@ fi
 
 echo "Step 3/4: Copying notes and meta-files..."
 
-find "$NOTES_DIR" -maxdepth 1 -type d -name "*семестр*" -exec cp -r {} "$QUARTZ_DIR/content/" \;
+find "$NOTES_DIR" -maxdepth 1 -type d -name "*sem*" -exec cp -r {} "$QUARTZ_DIR/content/" \;
 
 if [ -f "$NOTES_DIR/.index.md" ]; then
     cp "$NOTES_DIR/.index.md" "$QUARTZ_DIR/content/index.md"

@@ -15,7 +15,7 @@ const config: QuartzConfig = {
     baseUrl: "the-nataraja.github.io/",
     ignorePatterns: ["private", "templates", ".obsidian", "**/_*.md"],
     defaultDateType: "created",
-    generateSocialImages: true,
+
     theme: {
       fontOrigin: "googleFonts",
       cdnCaching: true,
@@ -72,6 +72,7 @@ const config: QuartzConfig = {
     ],
     filters: [Plugin.RemoveDrafts()],
     emitters: [
+      Plugin.CustomOgImages(),
       Plugin.AliasRedirects(),
       Plugin.ComponentResources(),
       Plugin.ContentPage(),
@@ -96,6 +97,7 @@ const config: QuartzConfig = {
       Plugin.Assets(),
       Plugin.Static(),
       Plugin.NotFoundPage(),
+
     ],
   },
 };
