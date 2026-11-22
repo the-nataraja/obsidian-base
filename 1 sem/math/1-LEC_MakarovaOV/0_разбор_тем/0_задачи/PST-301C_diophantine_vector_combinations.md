@@ -21,4 +21,4 @@ tags:
 
 ---
 
-ответы: [[PST-301C_diophantine_vector_combinations]]
+ответы: [[ANS-301C_diophantine_vector_combinations]]

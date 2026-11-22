@@ -19,4 +19,4 @@ tags:
 
 ---
 
-ответы: [[PST-301A_planar_vector_operations]]
+ответы: [[ANS-301A_planar_vector_operations]]

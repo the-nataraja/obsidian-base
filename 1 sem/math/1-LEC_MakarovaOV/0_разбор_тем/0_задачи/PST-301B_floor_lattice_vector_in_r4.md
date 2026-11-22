@@ -23,4 +23,4 @@ tags:
 
 ---
 
-ответы: [[PST-301B_floor_lattice_vector_in_r4]]
+ответы: [[ANS-301B_floor_lattice_vector_in_r4]]

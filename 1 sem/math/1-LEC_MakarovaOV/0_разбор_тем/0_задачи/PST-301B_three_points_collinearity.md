@@ -19,4 +19,4 @@ tags:
 
 ---
 
-ответы: [[PST-301B_three_points_collinearity]]
+ответы: [[ANS-301B_three_points_collinearity]]

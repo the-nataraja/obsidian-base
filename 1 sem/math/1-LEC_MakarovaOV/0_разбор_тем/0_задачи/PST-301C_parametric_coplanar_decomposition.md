@@ -23,4 +23,4 @@ tags:
 
 ---
 
-ответы: [[PST-301C_parametric_coplanar_decomposition]]
+ответы: [[ANS-301C_parametric_coplanar_decomposition]]

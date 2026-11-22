@@ -17,4 +17,4 @@ tags:
 
 ---
 
-ответы: [[PST-301B_collinear_vector_of_given_length]]
+ответы: [[ANS-301B_collinear_vector_of_given_length]]

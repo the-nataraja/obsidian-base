@@ -19,4 +19,4 @@ tags:
 
 ---
 
-ответы: [[PST-301A_unit_vector_and_direction_cosines]]
+ответы: [[ANS-301A_unit_vector_and_direction_cosines]]

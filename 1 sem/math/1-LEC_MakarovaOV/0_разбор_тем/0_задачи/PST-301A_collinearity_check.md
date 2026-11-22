@@ -19,4 +19,4 @@ tags:
 
 ---
 
-ответы: [[PST-301A_collinearity_check]]
+ответы: [[ANS-301A_collinearity_check]]

@@ -21,4 +21,4 @@ tags:
 
 ---
 
-ответы: [[PST-301D_integer_points_on_segment_gcd]]
+ответы: [[ANS-301D_integer_points_on_segment_gcd]]

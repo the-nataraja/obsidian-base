@@ -19,4 +19,4 @@ tags:
 
 ---
 
-ответы: [[PST-301B_parallelogram_vertex_and_diagonals]]
+ответы: [[ANS-301B_parallelogram_vertex_and_diagonals]]

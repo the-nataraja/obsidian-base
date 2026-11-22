@@ -23,4 +23,4 @@ tags:
 
 ---
 
-ответы: [[PST-301D_triangle_medians_and_centroid_in_rn]]
+ответы: [[ANS-301D_triangle_medians_and_centroid_in_rn]]

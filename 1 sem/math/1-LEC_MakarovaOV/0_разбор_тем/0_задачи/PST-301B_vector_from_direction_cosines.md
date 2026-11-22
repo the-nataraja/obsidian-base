@@ -17,4 +17,4 @@ tags:
 
 ---
 
-ответы: [[PST-301B_vector_from_direction_cosines]]
+ответы: [[ANS-301B_vector_from_direction_cosines]]

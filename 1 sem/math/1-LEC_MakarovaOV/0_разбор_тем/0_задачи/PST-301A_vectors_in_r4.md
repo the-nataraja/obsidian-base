@@ -19,4 +19,4 @@ tags:
 
 ---
 
-ответы: [[PST-301A_vectors_in_r4]]
+ответы: [[ANS-301A_vectors_in_r4]]

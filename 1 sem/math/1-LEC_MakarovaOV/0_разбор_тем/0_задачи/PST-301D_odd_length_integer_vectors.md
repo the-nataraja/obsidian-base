@@ -21,4 +21,4 @@ tags:
 
 ---
 
-ответы: [[PST-301D_odd_length_integer_vectors]]
+ответы: [[ANS-301D_odd_length_integer_vectors]]

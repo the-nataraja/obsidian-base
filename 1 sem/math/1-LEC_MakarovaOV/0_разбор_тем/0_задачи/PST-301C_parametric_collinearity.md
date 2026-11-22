@@ -21,4 +21,4 @@ $$\vec{u}(t) = (t^2 - 1, \; t - 1, \; 2t - 2) \quad \text{и} \quad \vec{v}(t) =
 
 ---
 
-ответы: [[PST-301C_parametric_collinearity]]
+ответы: [[ANS-301C_parametric_collinearity]]

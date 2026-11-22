@@ -19,4 +19,4 @@ tags:
 
 ---
 
-ответы: [[PST-301A_vector_coordinates_from_points]]
+ответы: [[ANS-301A_vector_coordinates_from_points]]
