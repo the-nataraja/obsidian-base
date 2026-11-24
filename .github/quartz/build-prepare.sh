@@ -24,10 +24,10 @@ echo "Step 3/4: Copying notes and meta-files..."
 
 find "$NOTES_DIR" -maxdepth 1 -type d -name "*sem*" -exec cp -r {} "$QUARTZ_DIR/content/" \;
 
-if [ -f "$NOTES_DIR/.index.md" ]; then
-    cp "$NOTES_DIR/.index.md" "$QUARTZ_DIR/content/index.md"
+if [ -f "$NOTES_DIR/_index.md" ]; then
+    cp "$NOTES_DIR/_index.md" "$QUARTZ_DIR/content/index.md"
 else
-    echo "Warning: .index.md not found in the root. Site homepage will be empty."
+    echo "Warning: _index.md not found in the root. Site homepage will be empty."
 fi
 
 if [ -f "$NOTES_DIR/README.md" ]; then
@@ -37,6 +37,10 @@ fi
 if [ -f "$NOTES_DIR/CONTRIBUTING.md" ]; then
     cp "$NOTES_DIR/CONTRIBUTING.md" "$QUARTZ_DIR/content/contributing.md"
 fi
+
+find "$QUARTZ_DIR/content" -type f -name "_index.md" -print0 | while IFS= read -r -d '' file; do
+    mv "$file" "${file%_index.md}index.md"
+done
 
 echo "Step 4/4: Generating index.md metadata..."
 find "$QUARTZ_DIR/content" -mindepth 1 -type d | while read -r dir; do
