@@ -30,6 +30,14 @@ else
     echo "Warning: _index.md not found in the root. Site homepage will be empty."
 fi
 
+if [ -f "$NOTES_DIR/README.md" ]; then
+    cp "$NOTES_DIR/README.md" "$QUARTZ_DIR/content/README.md"
+fi
+
+if [ -f "$NOTES_DIR/CONTRIBUTING.md" ]; then
+    cp "$NOTES_DIR/CONTRIBUTING.md" "$QUARTZ_DIR/content/CONTRIBUTING.md"
+fi
+
 find "$QUARTZ_DIR/content" -type f -name "_index.md" -print0 | while IFS= read -r -d '' file; do
     mv "$file" "${file%_index.md}index.md"
 done
